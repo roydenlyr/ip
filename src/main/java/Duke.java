@@ -1,17 +1,33 @@
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class Duke {
     public static void main(String[] args) {
-        printMessage("Hello! I'm Duke\n" +
+        String[] tasks = new String[100];
+        int taskCounter = 0;
+        printMessage("Hello! I'm Duke.\n" +
                 "What can I do for you?");
 
         while(true) {
             String line = new Scanner(System.in).nextLine();
-            if(sanitizeMessage(line).equals("bye")){
+            String sanitizedTask = sanitizeMessage(line);
+            switch(sanitizedTask) {
+            case "bye":
                 printMessage("Bye. Hope to see you again soon!");
                 return;
+            case "list":
+                String list = "";
+                for (int i = 0; i < taskCounter; i++) {
+                    list += (i + 1) + ": " + tasks[i] + (i == taskCounter - 1 ? "" : "\n");
+                }
+                printMessage(list);
+                break;
+            default:
+                tasks[taskCounter] = line;
+                printMessage("added: " + tasks[taskCounter]);
+                taskCounter++;
+                break;
             }
-            printMessage(line);
         }
     }
 
