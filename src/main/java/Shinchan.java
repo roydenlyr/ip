@@ -3,14 +3,16 @@ import java.util.Scanner;
 public class Shinchan {
     public static void main(String[] args) {
         Persona persona = new Persona();
-        Task[] tasks = new Task[100];
         persona.portrait();
         printMessage(persona.introduction());
+
+        Task[] tasks = new Task[100];
 
         while(true) {
             String line = new Scanner(System.in).nextLine();
             String sanitizedTask = sanitizeMessage(line);
             String message;
+
             int taskIndex;
             switch(sanitizedTask) {
             case "bye":
@@ -18,22 +20,21 @@ public class Shinchan {
                 return;
             case "list":
                 int numOfTasks = Task.getNumOfTasks();
+                StringBuilder msg = new StringBuilder();
                 if (numOfTasks > 0) {
-                    message = persona.listIntro();
-                    for (int i = 0; i < Task.getNumOfTasks(); i++) {
-                        message += "\n" + (i + 1) + "." + tasks[i].printTask();
+                    msg.append(persona.listIntro());
+                    for (int i = 0; i < numOfTasks; i++) {
+                        msg.append("\n").append(i + 1).append(". ").append(tasks[i].printTask());
                     }
                 } else {
-                    message = persona.listEmpty();
+                    msg.append(persona.listEmpty());
                 }
-                printMessage(message);
+                printMessage(msg.toString());
                 break;
             case "mark":
                 taskIndex = extractTrailingNumber(line) - 1;
                 tasks[taskIndex].setDone(true);
                 message = persona.markIntro() + tasks[taskIndex].printTask();
-//                        tasks[taskIndex].getStatusIcon() + " " +
-//                        tasks[taskIndex].getDescription();
                 printMessage(message);
                 break;
             case "unmark":
