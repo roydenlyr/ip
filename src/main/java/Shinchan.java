@@ -12,8 +12,6 @@ public class Shinchan {
         while(true) {
             String line = input.nextLine();
             String sanitizedTask = sanitizeMessage(line);
-            String message;
-            int taskIndex;
             switch(sanitizedTask) {
             case "bye":
                 printMessage(persona.bye());
@@ -32,25 +30,41 @@ public class Shinchan {
                 printMessage(msg.toString());
                 break;
             case "mark":
-                taskIndex = extractTrailingNumber(line) - 1;
-                tasks[taskIndex].setDone(true);
-                message = persona.markIntro() + tasks[taskIndex].printTask();
-                printMessage(message);
+                updateTaskStatus(tasks, line, true, persona);
                 break;
             case "unmark":
-                taskIndex = extractTrailingNumber(line) - 1;
-                tasks[taskIndex].setDone(false);
-                message = persona.unmarkIntro() +
-                        tasks[taskIndex].printTask();
-                printMessage(message);
+                updateTaskStatus(tasks, line, false, persona);
                 break;
             default:
-                tasks[Task.getNumOfTasks()] = new Task(line);
-                printMessage(persona.addTask() +
-                        "added: " + tasks[Task.getNumOfTasks() - 1].getDescription());
+                addTask(tasks, line, persona, sanitizedTask);
                 break;
             }
         }
+    }
+
+    public static void addTask(Task[] tasks, String line, Persona persona, String sanitizedTask) {
+        if (sanitizedTask.isEmpty()) {
+            printMessage("Please enter something useful");
+            return;
+        }
+        tasks[Task.getNumOfTasks()] = new Task(line);
+        printMessage(persona.addTask() +
+                "added: " + tasks[Task.getNumOfTasks() - 1].getDescription());
+    }
+
+    public static void updateTaskStatus(Task[] tasks, String line, boolean isDone, Persona persona) {
+        if (Task.getNumOfTasks() == 0) {
+            persona.listIntro();
+            return;
+        }
+        int taskIndex = extractTrailingNumber(line) - 1;
+        if (taskIndex < 0) return;
+        if (taskIndex > Task.getNumOfTasks()) {
+            printMessage("Hello? That task number is out of bounds!");
+            return;
+        }
+        tasks[taskIndex].setDone(isDone);
+        printMessage(isDone ? persona.markIntro() : persona.unmarkIntro() + tasks[taskIndex].printTask());
     }
 
     public static void printMessage (String message) {
@@ -71,10 +85,15 @@ public class Shinchan {
     }
 
     public static int extractTrailingNumber(String message) {
-        int lastIndex = message.length() - 1;
-        while (lastIndex >= 0 && Character.isDigit(message.charAt(lastIndex))) {
-            lastIndex--;
+        try {
+            int lastIndex = message.length() - 1;
+            while (lastIndex >= 0 && Character.isDigit(message.charAt(lastIndex))) {
+                lastIndex--;
+            }
+            return Integer.parseInt(message.substring(lastIndex + 1));
+        } catch (NumberFormatException e) {
+            printMessage("Hello? Can include which index?");
+            return -1;
         }
-        return Integer.parseInt(message.substring(lastIndex + 1));
     }
 }
