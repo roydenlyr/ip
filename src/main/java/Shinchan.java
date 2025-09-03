@@ -64,7 +64,7 @@ public class Shinchan {
             return;
         }
         tasks[taskIndex].setDone(isDone);
-        printMessage(isDone ? persona.markIntro() : persona.unmarkIntro() + tasks[taskIndex].printTask());
+        printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + tasks[taskIndex].printTask());
     }
 
     public static void printMessage (String message) {
