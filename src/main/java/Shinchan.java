@@ -1,34 +1,38 @@
 import java.util.Scanner;
-import java.util.Arrays;
 
-public class Duke {
+public class Shinchan {
     public static void main(String[] args) {
+        Persona persona = new Persona();
         Task[] tasks = new Task[100];
-        printMessage("Hello! I'm Duke.\n" +
-                "What can I do for you?");
+        persona.portrait();
+        printMessage(persona.introduction());
 
         while(true) {
             String line = new Scanner(System.in).nextLine();
             String sanitizedTask = sanitizeMessage(line);
-            String message = "";
-            int taskIndex = 0;
+            String message;
+            int taskIndex;
             switch(sanitizedTask) {
             case "bye":
-                printMessage("Bye. Hope to see you again soon!");
+                printMessage(persona.bye());
                 return;
             case "list":
-                message = "Here are the tasks in your list: \n";
-                for(int i = 0; i < Task.getNumOfTasks(); i++) {
-                    message += (i + 1) + "." + tasks[i].getStatusIcon() + " " +
-                            tasks[i].getDescription() +
-                            (i == Task.getNumOfTasks() - 1 ? "" : "\n");
+                int numOfTasks = Task.getNumOfTasks();
+                if (numOfTasks > 0) {
+                    message = persona.listIntro();
+                    for (int i = 0; i < Task.getNumOfTasks(); i++) {
+                        message += "\n" + (i + 1) + "." + tasks[i].getStatusIcon() + " " +
+                                tasks[i].getDescription();
+                    }
+                } else {
+                    message = persona.listEmpty();
                 }
                 printMessage(message);
                 break;
             case "mark":
                 taskIndex = extractTrailingNumber(line) - 1;
                 tasks[taskIndex].setDone(true);
-                message = "Nice! I've marked this task as done:\n" +
+                message = persona.markIntro() +
                         tasks[taskIndex].getStatusIcon() + " " +
                         tasks[taskIndex].getDescription();
                 printMessage(message);
@@ -36,14 +40,15 @@ public class Duke {
             case "unmark":
                 taskIndex = extractTrailingNumber(line) - 1;
                 tasks[taskIndex].setDone(false);
-                message = "Ok, I've marked this task as not done yet:\n" +
+                message = persona.unmarkIntro() +
                         tasks[taskIndex].getStatusIcon() + " " +
                         tasks[taskIndex].getDescription();
                 printMessage(message);
                 break;
             default:
                 tasks[Task.getNumOfTasks()] = new Task(line);
-                printMessage("added: " + tasks[Task.getNumOfTasks() - 1].getDescription());
+                printMessage(persona.addTask() +
+                        "added: " + tasks[Task.getNumOfTasks() - 1].getDescription());
                 break;
             }
         }
