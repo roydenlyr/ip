@@ -7,12 +7,12 @@ public class Shinchan {
         printMessage(persona.introduction());
 
         Task[] tasks = new Task[100];
+        Scanner input = new Scanner(System.in);
 
         while(true) {
-            String line = new Scanner(System.in).nextLine();
+            String line = input.nextLine();
             String sanitizedTask = sanitizeMessage(line);
             String message;
-
             int taskIndex;
             switch(sanitizedTask) {
             case "bye":
