@@ -21,8 +21,7 @@ public class Shinchan {
                 if (numOfTasks > 0) {
                     message = persona.listIntro();
                     for (int i = 0; i < Task.getNumOfTasks(); i++) {
-                        message += "\n" + (i + 1) + "." + tasks[i].getStatusIcon() + " " +
-                                tasks[i].getDescription();
+                        message += "\n" + (i + 1) + "." + tasks[i].printTask();
                     }
                 } else {
                     message = persona.listEmpty();
@@ -32,17 +31,16 @@ public class Shinchan {
             case "mark":
                 taskIndex = extractTrailingNumber(line) - 1;
                 tasks[taskIndex].setDone(true);
-                message = persona.markIntro() +
-                        tasks[taskIndex].getStatusIcon() + " " +
-                        tasks[taskIndex].getDescription();
+                message = persona.markIntro() + tasks[taskIndex].printTask();
+//                        tasks[taskIndex].getStatusIcon() + " " +
+//                        tasks[taskIndex].getDescription();
                 printMessage(message);
                 break;
             case "unmark":
                 taskIndex = extractTrailingNumber(line) - 1;
                 tasks[taskIndex].setDone(false);
                 message = persona.unmarkIntro() +
-                        tasks[taskIndex].getStatusIcon() + " " +
-                        tasks[taskIndex].getDescription();
+                        tasks[taskIndex].printTask();
                 printMessage(message);
                 break;
             default:
