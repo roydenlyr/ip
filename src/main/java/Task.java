@@ -36,5 +36,4 @@ public class Task {
     public String printTask() {
         return (getStatusIcon() + " " + getDescription());
     }
-
 }

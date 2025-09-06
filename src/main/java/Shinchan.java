@@ -11,12 +11,12 @@ public class Shinchan {
 
         while(true) {
             String line = input.nextLine();
-            String sanitizedTask = sanitizeMessage(line);
-            switch(sanitizedTask) {
-            case "bye":
+            Command command = sanitizeMessage(line);
+            switch(command) {
+            case BYE:
                 printMessage(persona.bye());
                 return;
-            case "list":
+            case LIST:
                 int numOfTasks = Task.getNumOfTasks();
                 StringBuilder msg = new StringBuilder();
                 if (numOfTasks > 0) {
@@ -29,24 +29,25 @@ public class Shinchan {
                 }
                 printMessage(msg.toString());
                 break;
-            case "mark":
+            case ADD:
+                addTask(tasks, line, persona, command);
+                break;
+            case MARK:
                 updateTaskStatus(tasks, line, true, persona);
                 break;
-            case "unmark":
+            case UNMARK:
                 updateTaskStatus(tasks, line, false, persona);
                 break;
-            default:
-                addTask(tasks, line, persona, sanitizedTask);
+            case EMPTY:
+                System.out.println("Please enter something");
                 break;
+            default:
+                System.out.println("Invalid command");
             }
         }
     }
 
-    public static void addTask(Task[] tasks, String line, Persona persona, String sanitizedTask) {
-        if (sanitizedTask.isEmpty()) {
-            printMessage("Please enter something useful");
-            return;
-        }
+    public static void addTask(Task[] tasks, String line, Persona persona, Command command) {
         tasks[Task.getNumOfTasks()] = new Task(line);
         printMessage(persona.addTask() +
                 "added: " + tasks[Task.getNumOfTasks() - 1].getDescription());
@@ -54,7 +55,7 @@ public class Shinchan {
 
     public static void updateTaskStatus(Task[] tasks, String line, boolean isDone, Persona persona) {
         if (Task.getNumOfTasks() == 0) {
-            persona.listIntro();
+            printMessage(persona.listEmpty());
             return;
         }
         int taskIndex = extractTrailingNumber(line) - 1;
@@ -73,15 +74,17 @@ public class Shinchan {
         System.out.println("====================\n");
     }
 
-    public static String sanitizeMessage(String message) {
-        message = message.trim().toLowerCase();
-        if (message.contains("unmark")) {
-            return "unmark";
+    public static Command sanitizeMessage(String message) {
+        try {
+            if (message == null || message.isBlank()) {
+                return Command.EMPTY;
+            }
+
+            message = message.trim().toUpperCase().split("\\s", 2)[0];
+            return Command.valueOf(message);
+        } catch (IllegalArgumentException e) {
+            return Command.ADD;
         }
-        if (message.contains("mark")) {
-            return "mark";
-        }
-        return message;
     }
 
     public static int extractTrailingNumber(String message) {
