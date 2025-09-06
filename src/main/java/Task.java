@@ -33,7 +33,7 @@ public class Task {
         return (isDone ? "[X]" : "[ ]");
     }
 
-    public String printTask() {
+    public String toString() {
         return (getStatusIcon() + " " + getDescription());
     }
 }

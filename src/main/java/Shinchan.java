@@ -22,7 +22,7 @@ public class Shinchan {
                 if (numOfTasks > 0) {
                     msg.append(persona.listIntro());
                     for (int i = 0; i < numOfTasks; i++) {
-                        msg.append("\n").append(i + 1).append(". ").append(tasks[i].printTask());
+                        msg.append("\n").append(i + 1).append(". ").append(tasks[i]);
                     }
                 } else {
                     msg.append(persona.listEmpty());
@@ -30,7 +30,7 @@ public class Shinchan {
                 printMessage(msg.toString());
                 break;
             case ADD:
-                addTask(tasks, line, persona, command);
+                addTask(tasks, line, persona);
                 break;
             case MARK:
                 updateTaskStatus(tasks, line, true, persona);
@@ -47,7 +47,7 @@ public class Shinchan {
         }
     }
 
-    public static void addTask(Task[] tasks, String line, Persona persona, Command command) {
+    public static void addTask(Task[] tasks, String line, Persona persona) {
         tasks[Task.getNumOfTasks()] = new Task(line);
         printMessage(persona.addTask() +
                 "added: " + tasks[Task.getNumOfTasks() - 1].getDescription());
@@ -65,7 +65,7 @@ public class Shinchan {
             return;
         }
         tasks[taskIndex].setDone(isDone);
-        printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + tasks[taskIndex].printTask());
+        printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + tasks[taskIndex]);
     }
 
     public static void printMessage (String message) {
