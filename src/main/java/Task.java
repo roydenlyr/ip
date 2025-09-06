@@ -9,6 +9,8 @@ public class Task {
         numOfTasks++;
     }
 
+    public Task() {}
+
     public String getDescription() {
         return description;
     }

@@ -83,4 +83,9 @@ public class Persona {
                 To add or to ignore? Hmmm... Fine, I'll add it this time. TSK!
                 """);
     }
+
+    public String displayAddConfirmation(Task task) {
+        return "Got it. I've added this tasks:\n" + task +
+                "\nNow you have " +  (Task.getNumOfTasks()) + " tasks in the list.";
+    }
 }
