@@ -11,23 +11,13 @@ public class Shinchan {
 
         while(true) {
             String line = input.nextLine();
-            Command command = sanitizeMessage(line);
+            Command command = extractCommand(line);
             switch(command) {
             case BYE:
                 printMessage(persona.bye());
                 return;
             case LIST:
-                int numOfTasks = Task.getNumOfTasks();
-                StringBuilder msg = new StringBuilder();
-                if (numOfTasks > 0) {
-                    msg.append(persona.listIntro());
-                    for (int i = 0; i < numOfTasks; i++) {
-                        msg.append("\n").append(i + 1).append(". ").append(tasks[i]);
-                    }
-                } else {
-                    msg.append(persona.listEmpty());
-                }
-                printMessage(msg.toString());
+                showList(persona, tasks);
                 break;
             case ADD:
                 addTask(tasks, line, persona);
@@ -43,8 +33,23 @@ public class Shinchan {
                 break;
             default:
                 System.out.println("Invalid command");
+                break;
             }
         }
+    }
+
+    private static void showList(Persona persona, Task[] tasks) {
+        int numOfTasks = Task.getNumOfTasks();
+        StringBuilder msg = new StringBuilder();
+        if (numOfTasks > 0) {
+            msg.append(persona.listIntro());
+            for (int i = 0; i < numOfTasks; i++) {
+                msg.append("\n").append(i + 1).append(". ").append(tasks[i]);
+            }
+        } else {
+            msg.append(persona.listEmpty());
+        }
+        printMessage(msg.toString());
     }
 
     public static void addTask(Task[] tasks, String line, Persona persona) {
@@ -74,7 +79,7 @@ public class Shinchan {
         System.out.println("====================\n");
     }
 
-    public static Command sanitizeMessage(String message) {
+    public static Command extractCommand(String message) {
         try {
             if (message == null || message.isBlank()) {
                 return Command.EMPTY;
