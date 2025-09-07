@@ -26,13 +26,13 @@ public class Shinchan {
                 updateTaskStatus(tasks, line, false, persona);
                 break;
             case TODO:
-                addTodo(line, tasks);
+                addTodo(line, tasks, persona);
                 break;
             case DEADLINE:
-                addDeadline(line, tasks);
+                addDeadline(line, tasks, persona);
                 break;
             case EVENT:
-                addEvent(line, tasks);
+                addEvent(line, tasks, persona);
                 break;
             case EMPTY:
                 System.out.println("Please enter something");
@@ -47,36 +47,38 @@ public class Shinchan {
         }
     }
 
-    private static void addEvent(String line, Task[] tasks) {
-        String[] details = extractContent(line).split("/");
-
-        String description = details[0].trim();
-        String from = details[1].split("\\s", 2)[1].trim();
-        String to = details[2].split("\\s", 2)[1].trim();
+    private static void addEvent(String line, Task[] tasks, Persona persona) {
+        String[] contents = extractContents(line);
+        String description = contents[0].trim();
+        String from = formatDate(contents[1]);
+        String to = formatDate(contents[2]);
 
         tasks[Task.getNumOfTasks()] = new Event(description, from, to);
-        Persona persona = new Persona();
-        printMessage(persona.displayAddConfirmation(tasks[Task.getNumOfTasks() - 1]));
+        printMessage(persona.addTask(tasks[Task.getNumOfTasks() - 1]));
     }
 
-    private static void addDeadline(String line, Task[] tasks) {
-        String[] details = extractContent(line).split("/");
-        String description = details[0].trim();
-        String deadline = details[1].split("\\s", 2)[1].trim();
+    private static void addDeadline(String line, Task[] tasks, Persona persona) {
+        String[] contents = extractContents(line);
+        String description = contents[0].trim();
+        String deadline = formatDate(contents[1]);
+
         tasks[Task.getNumOfTasks()] = new Deadline(description, deadline);
-        Persona persona = new Persona();
-        printMessage(persona.displayAddConfirmation(tasks[Task.getNumOfTasks() - 1]));
+        printMessage(persona.addTask(tasks[Task.getNumOfTasks() - 1]));
     }
 
-    private static void addTodo(String line, Task[] tasks) {
-        String description = extractContent(line);
+    private static void addTodo(String line, Task[] tasks, Persona persona) {
+        String description = extractContents(line)[0].trim();
         tasks[Task.getNumOfTasks()] = new Todo(description);
-        Persona persona = new Persona();
-        printMessage(persona.displayAddConfirmation(tasks[Task.getNumOfTasks() - 1]));
+        printMessage(persona.addTask(tasks[Task.getNumOfTasks() - 1]));
     }
 
-    private static String extractContent(String line) {
-        return line.split("\\s", 2)[1].trim();
+    private static String[] extractContents(String line) {
+        String content = line.split("\\s", 2)[1].trim();
+        return content.split("/");
+    }
+
+    private static String formatDate(String date) {
+        return date.split("\\s", 2)[1].trim();
     }
 
     private static void showList(Persona persona, Task[] tasks) {

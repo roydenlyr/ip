@@ -1,9 +1,9 @@
 public class Deadline extends Todo{
-    protected String deadline;
+    protected String by;
 
-    public Deadline(String description, String deadline){
+    public Deadline(String description, String by){
         super(description);
-        this.deadline = deadline;
+        this.by = by;
     }
 
     public Deadline(String description) {
@@ -12,6 +12,6 @@ public class Deadline extends Todo{
 
     public String toString(){
         return "[D]" + getStatusIcon() + " " + getDescription() +
-                " (by: " + deadline + ")";
+                " (by: " + by + ")";
     }
 }

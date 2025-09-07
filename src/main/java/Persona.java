@@ -57,7 +57,7 @@ public class Persona {
 
     public String listIntro() {
         return ("""
-                Can you say bye now??? 
+                Can you say bye now???
                 Anyways, here are the tasks in your list:""");
     }
 
@@ -67,7 +67,7 @@ public class Persona {
 
     public String markIntro() {
         return ("""
-                Didn't expect you to complete anything to be honest 
+                Didn't expect you to complete anything to be honest
                 Here ya go, I've marked it for you this time:
                 """);
     }
@@ -84,7 +84,7 @@ public class Persona {
                 """);
     }
 
-    public String displayAddConfirmation(Task task) {
+    public String addTask(Task task) {
         return "Got it. I've added this tasks:\n" + task +
                 "\nNow you have " +  (Task.getNumOfTasks()) + " tasks in the list.";
     }
