@@ -52,29 +52,29 @@ public class Persona {
     }
 
     public String bye() {
-        return "Bye bye! Don't miss me too much, okay? (￣▽￣)ノ";
+        return "Bye bye! Don't miss me too much, okay?";
     }
 
     public String listIntro() {
         return ("""
-                Can you say bye now??? (╯‵□′)╯︵┻━┻
+                Can you say bye now??? 
                 Anyways, here are the tasks in your list:""");
     }
 
     public String listEmpty() {
-        return "Your list is emptier than my bank account... pathetic ಠ_ಠ";
+        return "Your list is emptier than my bank account... pathetic";
     }
 
     public String markIntro() {
         return ("""
-                Didn't expect you to complete anything to be honest ¯\\_(ツ)_/¯
+                Didn't expect you to complete anything to be honest 
                 Here ya go, I've marked it for you this time:
                 """);
     }
 
     public String unmarkIntro() {
         return ("""
-                AHAHAHAHA!! Someone's task is piling up o(^▽^)o:
+                AHAHAHAHA!! Someone's task is piling up :
                 """);
     }
 
