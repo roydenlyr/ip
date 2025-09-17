@@ -3,12 +3,10 @@ package shinchan.tasks;
 public class Task {
     protected String description;
     protected boolean isDone;
-    private static int numOfTasks = 0;
 
     public Task(String description) {
         setDescription(description);
         setDone(false);
-        numOfTasks++;
     }
 
     public Task() {}
@@ -27,10 +25,6 @@ public class Task {
 
     public void setDone(boolean done) {
         isDone = done;
-    }
-
-    public static int getNumOfTasks() {
-        return numOfTasks;
     }
 
     public String getStatusIcon() {

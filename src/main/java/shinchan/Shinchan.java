@@ -12,6 +12,7 @@ import shinchan.tasks.Todo;
 import shinchan.ui.Persona;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Shinchan {
     public static void main(String[] args) {
@@ -19,7 +20,7 @@ public class Shinchan {
         persona.portrait();
         printMessage(persona.introduction());
 
-        Task[] tasks = new Task[100];
+        ArrayList<Task> taskList = new ArrayList<>();
         Scanner input = new Scanner(System.in);
 
             while(true) {
@@ -28,22 +29,22 @@ public class Shinchan {
                     Command command = extractCommand(line);
                     switch (command) {
                     case LIST:
-                        showList(persona, tasks);
+                        showList(persona, taskList);
                         break;
                     case MARK:
-                        updateTaskStatus(tasks, line, true, persona);
+                        updateTaskStatus(taskList, line, true, persona);
                         break;
                     case UNMARK:
-                        updateTaskStatus(tasks, line, false, persona);
+                        updateTaskStatus(taskList, line, false, persona);
                         break;
                     case TODO:
-                        addTodo(line, tasks, persona);
+                        addTodo(line, taskList, persona);
                         break;
                     case DEADLINE:
-                        addDeadline(line, tasks, persona);
+                        addDeadline(line, taskList, persona);
                         break;
                     case EVENT:
-                        addEvent(line, tasks, persona);
+                        addEvent(line, taskList, persona);
                         break;
                     case EMPTY:
                         printMessage("Please enter something");
@@ -62,47 +63,48 @@ public class Shinchan {
             }
     }
 
-    private static void addEvent(String line, Task[] tasks, Persona persona)
+    private static void addEvent(String line, ArrayList<Task> taskList, Persona persona)
             throws TaskMissingDateException, TaskMissingDescriptionException {
         String[] contents = extractContents(line);
         if (contents == null) {
             throw new TaskMissingDescriptionException("The description of Event task cannot be empty!");
         }
-        if (contents[1].isBlank() || contents[2].isBlank()) {
+        if (contents.length != 3) {
             throw new TaskMissingDateException("Please enter a valid TO and FROM date!");
         }
         String description = contents[0].trim();
         String from = formatDate(contents[1]);
         String to = formatDate(contents[2]);
 
-        tasks[Task.getNumOfTasks()] = new Event(description, from, to);
-        printMessage(persona.addTask(tasks[Task.getNumOfTasks() - 1]));
+        taskList.add(new Event(description, from, to));
+        printMessage(persona.addTask(taskList));
     }
 
-    private static void addDeadline(String line, Task[] tasks, Persona persona)
+    private static void addDeadline(String line, ArrayList<Task> taskList, Persona persona)
             throws TaskMissingDateException, TaskMissingDescriptionException {
         String[] contents = extractContents(line);
         if (contents == null) {
             throw new TaskMissingDescriptionException("The description of Deadline task cannot be empty!");
         }
-        if (contents[1].isBlank()) {
+        if (contents.length != 2) {
             throw new TaskMissingDateException("Please enter a valid deadline date!");
         }
         String description = contents[0].trim();
         String deadline = formatDate(contents[1]);
 
-        tasks[Task.getNumOfTasks()] = new Deadline(description, deadline);
-        printMessage(persona.addTask(tasks[Task.getNumOfTasks() - 1]));
+        taskList.add(new Deadline(description, deadline));
+        printMessage(persona.addTask(taskList));
     }
 
-    private static void addTodo(String line, Task[] tasks, Persona persona) throws TaskMissingDescriptionException {
+    private static void addTodo(String line, ArrayList<Task> taskList, Persona persona) throws TaskMissingDescriptionException {
         String[] contents = extractContents(line);
         if (contents == null) {
             throw new TaskMissingDescriptionException("The description of Todo task cannot be empty!");
         }
         String description = contents[0].trim();
-        tasks[Task.getNumOfTasks()] = new Todo(description);
-        printMessage(persona.addTask(tasks[Task.getNumOfTasks() - 1]));
+
+        taskList.add(new Todo(description));
+        printMessage(persona.addTask(taskList));
     }
 
     private static String[] extractContents(String line) {
@@ -118,13 +120,13 @@ public class Shinchan {
         return date.split("\\s", 2)[1].trim();
     }
 
-    private static void showList(Persona persona, Task[] tasks) {
-        int numOfTasks = Task.getNumOfTasks();
+    private static void showList(Persona persona, ArrayList<Task> taskList) {
+        int numOfTasks = taskList.size();
         StringBuilder msg = new StringBuilder();
         if (numOfTasks > 0) {
             msg.append(persona.listIntro());
             for (int i = 0; i < numOfTasks; i++) {
-                msg.append("\n").append(i + 1).append(". ").append(tasks[i]);
+                msg.append("\n").append(i + 1).append(". ").append(taskList.get(i));
             }
         } else {
             msg.append(persona.listEmpty());
@@ -132,9 +134,9 @@ public class Shinchan {
         printMessage(msg.toString());
     }
 
-    public static void updateTaskStatus(Task[] tasks, String line, boolean isDone, Persona persona)
+    public static void updateTaskStatus(ArrayList<Task> taskList, String line, boolean isDone, Persona persona)
             throws TaskNumberOutOfBoundException, MarkMissingItemNumberException {
-        if (Task.getNumOfTasks() == 0) {
+        if (taskList.isEmpty()) {
             printMessage(persona.listEmpty());
             return;
         }
@@ -142,11 +144,11 @@ public class Shinchan {
         if (taskIndex < 0) {
             throw new MarkMissingItemNumberException("Please include a valid item number!");
         }
-        if (taskIndex >= Task.getNumOfTasks()) {
+        if (taskIndex >= taskList.size()) {
             throw new TaskNumberOutOfBoundException("Task number is out of bounds!");
         }
-        tasks[taskIndex].setDone(isDone);
-        printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + tasks[taskIndex]);
+        taskList.get(taskIndex).setDone(isDone);
+        printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + taskList.get(taskIndex));
     }
 
     public static void printMessage (String message) {
