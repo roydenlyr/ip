@@ -1,3 +1,7 @@
+package shinchan.ui;
+
+import shinchan.tasks.Task;
+
 public class Persona {
     public void portrait() {
         System.out.println("""                                                                                  

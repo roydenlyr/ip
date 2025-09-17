@@ -1,0 +1,17 @@
+feat(exception): Add exception handling for invalid commands
+
+- Implemented try-catch blocks to capture invalid commands
+- Added custom exception messages for empty or incomplete task inputs
+- Ensured user-friendly feedback instead of abupt program termination
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch branch-Level-5
+# Changes to be committed:
+#	modified:   src/main/java/Command.java
+#	new file:   src/main/java/MarkMissingItemNumberException.java
+#	modified:   src/main/java/Shinchan.java
+#	new file:   src/main/java/TaskMissingDateException.java
+#	new file:   src/main/java/TaskMissingDescriptionException.java
+#	new file:   src/main/java/TaskNumberOutOfBoundException.java
+#

@@ -1,3 +1,16 @@
+package shinchan;
+
+import shinchan.commands.Command;
+import shinchan.exceptions.MarkMissingItemNumberException;
+import shinchan.exceptions.TaskMissingDateException;
+import shinchan.exceptions.TaskMissingDescriptionException;
+import shinchan.exceptions.TaskNumberOutOfBoundException;
+import shinchan.tasks.Deadline;
+import shinchan.tasks.Event;
+import shinchan.tasks.Task;
+import shinchan.tasks.Todo;
+import shinchan.ui.Persona;
+
 import java.util.Scanner;
 
 public class Shinchan {
@@ -43,7 +56,7 @@ public class Shinchan {
                         break;
                     }
                 } catch (TaskNumberOutOfBoundException | MarkMissingItemNumberException | TaskMissingDateException
-                        | TaskMissingDescriptionException e) {
+                         | TaskMissingDescriptionException e) {
                     printMessage(e.getMessage());
                 }
             }

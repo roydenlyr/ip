@@ -1,3 +1,5 @@
+package shinchan.commands;
+
 public enum Command {
     BYE,
     LIST,
