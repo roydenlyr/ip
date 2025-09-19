@@ -1,6 +1,7 @@
 package shinchan;
 
 import shinchan.commands.Command;
+import shinchan.exceptions.EmptyTaskListException;
 import shinchan.exceptions.MarkMissingItemNumberException;
 import shinchan.exceptions.TaskMissingDateException;
 import shinchan.exceptions.TaskMissingDescriptionException;
@@ -52,15 +53,35 @@ public class Shinchan {
                     case BYE:
                         printMessage(persona.bye());
                         return;
+                    case DELETE:
+                        deleteTask(taskList, line, persona);
+                        break;
                     default:
                         printMessage("Invalid command");
                         break;
                     }
                 } catch (TaskNumberOutOfBoundException | MarkMissingItemNumberException | TaskMissingDateException
-                         | TaskMissingDescriptionException e) {
+                         | TaskMissingDescriptionException | EmptyTaskListException e) {
                     printMessage(e.getMessage());
                 }
             }
+    }
+
+    private static void deleteTask(ArrayList<Task> taskList, String line, Persona persona)
+            throws EmptyTaskListException,  TaskNumberOutOfBoundException, MarkMissingItemNumberException {
+        if (taskList.isEmpty()) {
+            throw new EmptyTaskListException(persona.listEmpty());
+        }
+        int taskIndex = extractTrailingNumber(line) - 1;
+        if (taskIndex < 0) {
+            throw new MarkMissingItemNumberException("Please include a valid item number!");
+        }
+        if (taskIndex >= taskList.size()) {
+            throw new TaskNumberOutOfBoundException("Task number is out of bounds!");
+        }
+
+        printMessage(persona.removeTask(taskList.get(taskIndex), taskList.size() - 1));
+        taskList.remove(taskIndex);
     }
 
     private static void addEvent(String line, ArrayList<Task> taskList, Persona persona)
