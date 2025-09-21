@@ -74,7 +74,7 @@ public class Shinchan {
     }
 
     private static void deleteTask(ArrayList<Task> taskList, String line, Persona persona)
-            throws EmptyTaskListException,  TaskNumberOutOfBoundException, MarkMissingItemNumberException {
+            throws EmptyTaskListException, TaskNumberOutOfBoundException, MarkMissingItemNumberException, IOException {
         if (taskList.isEmpty()) {
             throw new EmptyTaskListException(persona.listEmpty());
         }
@@ -88,6 +88,7 @@ public class Shinchan {
 
         printMessage(persona.removeTask(taskList.get(taskIndex), taskList.size() - 1));
         taskList.remove(taskIndex);
+        Datamanager.writeToFile(taskList);
     }
 
     private static void addEvent(String line, ArrayList<Task> taskList, Persona persona)
