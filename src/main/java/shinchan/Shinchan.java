@@ -1,6 +1,7 @@
 package shinchan;
 
 import shinchan.commands.Command;
+import shinchan.data.Datamanager;
 import shinchan.exceptions.MarkMissingItemNumberException;
 import shinchan.exceptions.TaskMissingDateException;
 import shinchan.exceptions.TaskMissingDescriptionException;
@@ -11,6 +12,8 @@ import shinchan.tasks.Task;
 import shinchan.tasks.Todo;
 import shinchan.ui.Persona;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -20,7 +23,10 @@ public class Shinchan {
         persona.portrait();
         printMessage(persona.introduction());
 
-        ArrayList<Task> taskList = new ArrayList<>();
+
+        Datamanager datamanager = new Datamanager("./data/data.txt");
+        ArrayList<Task> taskList = datamanager.loadData();
+
         Scanner input = new Scanner(System.in);
 
             while(true) {
@@ -57,14 +63,14 @@ public class Shinchan {
                         break;
                     }
                 } catch (TaskNumberOutOfBoundException | MarkMissingItemNumberException | TaskMissingDateException
-                         | TaskMissingDescriptionException e) {
+                         | TaskMissingDescriptionException | IOException e) {
                     printMessage(e.getMessage());
                 }
             }
     }
 
     private static void addEvent(String line, ArrayList<Task> taskList, Persona persona)
-            throws TaskMissingDateException, TaskMissingDescriptionException {
+            throws TaskMissingDateException, TaskMissingDescriptionException, IOException {
         String[] contents = extractContents(line);
         if (contents == null) {
             throw new TaskMissingDescriptionException("The description of Event task cannot be empty!");
@@ -76,12 +82,14 @@ public class Shinchan {
         String from = formatDate(contents[1]);
         String to = formatDate(contents[2]);
 
-        taskList.add(new Event(description, from, to));
+        Task event = new Event(description, from, to);
+        taskList.add(event);
         printMessage(persona.addTask(taskList));
+        Datamanager.appendToFile(event);
     }
 
     private static void addDeadline(String line, ArrayList<Task> taskList, Persona persona)
-            throws TaskMissingDateException, TaskMissingDescriptionException {
+            throws TaskMissingDateException, TaskMissingDescriptionException, IOException {
         String[] contents = extractContents(line);
         if (contents == null) {
             throw new TaskMissingDescriptionException("The description of Deadline task cannot be empty!");
@@ -92,19 +100,24 @@ public class Shinchan {
         String description = contents[0].trim();
         String deadline = formatDate(contents[1]);
 
-        taskList.add(new Deadline(description, deadline));
+        Task deadlineTask = new Deadline(description, deadline);
+        taskList.add(deadlineTask);
         printMessage(persona.addTask(taskList));
+        Datamanager.appendToFile(deadlineTask);
     }
 
-    private static void addTodo(String line, ArrayList<Task> taskList, Persona persona) throws TaskMissingDescriptionException {
+    private static void addTodo(String line, ArrayList<Task> taskList, Persona persona)
+            throws TaskMissingDescriptionException, IOException {
         String[] contents = extractContents(line);
         if (contents == null) {
             throw new TaskMissingDescriptionException("The description of Todo task cannot be empty!");
         }
         String description = contents[0].trim();
 
-        taskList.add(new Todo(description));
+        Task todo = new Todo(description);
+        taskList.add(todo);
         printMessage(persona.addTask(taskList));
+        Datamanager.appendToFile(todo);
     }
 
     private static String[] extractContents(String line) {
@@ -135,7 +148,7 @@ public class Shinchan {
     }
 
     public static void updateTaskStatus(ArrayList<Task> taskList, String line, boolean isDone, Persona persona)
-            throws TaskNumberOutOfBoundException, MarkMissingItemNumberException {
+            throws TaskNumberOutOfBoundException, MarkMissingItemNumberException, IOException {
         if (taskList.isEmpty()) {
             printMessage(persona.listEmpty());
             return;
@@ -149,6 +162,7 @@ public class Shinchan {
         }
         taskList.get(taskIndex).setDone(isDone);
         printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + taskList.get(taskIndex));
+        Datamanager.writeToFile(taskList);
     }
 
     public static void printMessage (String message) {

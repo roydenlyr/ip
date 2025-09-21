@@ -1,0 +1,3 @@
+[T][ ] buy bread
+[D][ ] eat bread (by: today)
+[E][ ] poop bread (from: today to: tmr)
