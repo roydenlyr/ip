@@ -94,4 +94,8 @@ public class Persona {
         return "Got it. I've added this tasks:\n" + taskList.get(taskList.size() - 1) +
                 "\nNow you have " +  taskList.size() + " tasks in the list.";
     }
+
+    public String removeTask(Task task, int size) {
+        return "Noted. I've removed this task:\n" + task + "\nNow you have " + size + " tasks in the list.";
+    }
 }
