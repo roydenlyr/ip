@@ -1,2 +1,2 @@
 [T][ ] buy bread
-[D][ ] eat bread (by: today)
+[D][ ] eat bread (by: Sep 23 2025 2359)

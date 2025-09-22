@@ -1,9 +1,12 @@
 package shinchan.tasks;
 
-public class Deadline extends Todo{
-    protected String by;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-    public Deadline(String description, String by){
+public class Deadline extends Todo{
+    protected LocalDateTime by;
+
+    public Deadline(String description, LocalDateTime by){
         super(description);
         this.by = by;
     }
@@ -12,8 +15,13 @@ public class Deadline extends Todo{
         super(description);
     }
 
+    public LocalDateTime getBy() {
+        return by;
+    }
+
     public String toString(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy HHmm");
         return "[D]" + getStatusIcon() + " " + getDescription() +
-                " (by: " + by + ")";
+                " (by: " + by.format(formatter) + ")";
     }
 }

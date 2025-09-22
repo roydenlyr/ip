@@ -1,8 +1,10 @@
 package shinchan.tasks;
 
-import shinchan.data.Datamanager;
+import shinchan.data.DataManager;
 import shinchan.exceptions.EmptyTaskListException;
+import shinchan.exceptions.IllegalDateFormatException;
 import shinchan.exceptions.MarkMissingItemNumberException;
+import shinchan.exceptions.MissingDateException;
 import shinchan.exceptions.MissingWordException;
 import shinchan.exceptions.TaskMissingDateException;
 import shinchan.exceptions.TaskMissingDescriptionException;
@@ -10,6 +12,10 @@ import shinchan.exceptions.TaskNumberOutOfBoundException;
 import shinchan.ui.Persona;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 public class TaskList {
@@ -21,10 +27,40 @@ public class TaskList {
         persona = new Persona();
     }
 
+    public void findDate (String input) throws MissingDateException, IllegalDateFormatException {
+        String[] contents = extractContents(input);
+        if (contents == null) {
+            throw new MissingDateException("Please include the date to search!");
+        }
+
+        LocalDateTime date = formatDate(input);
+        StringBuilder msg = new StringBuilder();
+        int index = 1;
+        for (Task task : taskList) {
+            if (task instanceof Deadline deadline) {
+                if (deadline.getBy().isEqual(date)) {
+                    msg.append("\n").append(index).append(". ").append(task);
+                    index++;
+                }
+            }
+            if (task instanceof Event event) {
+                if (event.getBy().isEqual(date) || event.getFrom().isEqual(date)) {
+                    msg.append("\n").append(index).append(". ").append(task);
+                    index++;
+                }
+            }
+        }
+        if (msg.isEmpty()) {
+            persona.dateNotFound();
+            return;
+        }
+        persona.dateFound(msg.toString());
+    }
+
     public void findWord (String input) throws MissingWordException {
         String[] contents = extractContents(input);
         if (contents == null) {
-            throw new MissingWordException("Please include the word to search");
+            throw new MissingWordException("Please include the word to search!");
         }
         String word = contents[0].trim();
         StringBuilder msg = new StringBuilder();
@@ -57,11 +93,11 @@ public class TaskList {
 
         persona.removeTask(taskList.get(taskIndex), taskList.size() - 1);
         taskList.remove(taskIndex);
-        Datamanager.writeToFile(taskList);
+        DataManager.writeToFile(taskList);
     }
 
     public void addEvent(String input)
-            throws TaskMissingDateException, TaskMissingDescriptionException, IOException {
+            throws TaskMissingDateException, TaskMissingDescriptionException, IOException, IllegalDateFormatException {
         String[] contents = extractContents(input);
         if (contents == null) {
             throw new TaskMissingDescriptionException("The description of Event task cannot be empty!");
@@ -70,17 +106,17 @@ public class TaskList {
             throw new TaskMissingDateException("Please enter a valid TO and FROM date!");
         }
         String description = contents[0].trim();
-        String from = formateDate(contents[1]);
-        String to = formateDate(contents[2]);
+        LocalDateTime from = formatDate(contents[1]);
+        LocalDateTime to = formatDate(contents[2]);
 
         Task event = new Event(description, from, to);
         taskList.add(event);
         persona.addTask(taskList);
-        Datamanager.appendToFile(event);
+        DataManager.appendToFile(event);
     }
 
     public void addDeadline(String input)
-            throws TaskMissingDateException, TaskMissingDescriptionException, IOException {
+            throws TaskMissingDateException, TaskMissingDescriptionException, IOException, IllegalDateFormatException {
         String[] contents = extractContents(input);
         if (contents == null) {
             throw new TaskMissingDescriptionException("The description of Deadline task cannot be empty!");
@@ -89,12 +125,12 @@ public class TaskList {
             throw new TaskMissingDateException("Please enter a valid deadline date!");
         }
         String description = contents[0].trim();
-        String deadline = formateDate(contents[1]);
+        LocalDateTime deadline = formatDate(contents[1]);
 
         Task deadlineTask = new Deadline(description, deadline);
         taskList.add(deadlineTask);
         persona.addTask(taskList);
-        Datamanager.appendToFile(deadlineTask);
+        DataManager.appendToFile(deadlineTask);
     }
 
     public void addTodo(String input)
@@ -108,7 +144,7 @@ public class TaskList {
         Task todo = new Todo(description);
         taskList.add(todo);
         persona.addTask(taskList);
-        Datamanager.appendToFile(todo);
+        DataManager.appendToFile(todo);
     }
 
     public void updateTaskStatus(String input, boolean isDone)
@@ -126,7 +162,7 @@ public class TaskList {
         }
         taskList.get(taskIndex).setDone(isDone);
         Persona.printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + taskList.get(taskIndex));
-        Datamanager.writeToFile(taskList);
+        DataManager.writeToFile(taskList);
     }
 
     public void showList() {
@@ -143,8 +179,14 @@ public class TaskList {
         Persona.printMessage(msg.toString());
     }
 
-    private String formateDate(String date) {
-        return date.split("\\s", 2)[1].trim();
+    private LocalDateTime formatDate(String date) throws IllegalDateFormatException {
+        try {
+            date = date.split("\\s", 2)[1].trim();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+            return LocalDateTime.parse(date, formatter);
+        } catch (DateTimeParseException e) {
+            throw new IllegalDateFormatException("Invalid date format! Expected yyyy-MM-dd HHmm, e.g, 2025-09-23 2359.");
+        }
     }
 
     private String[] extractContents(String line) {

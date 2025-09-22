@@ -11,5 +11,6 @@ public enum Commands {
     EMPTY,
     ERROR,
     DELETE,
-    FIND
+    FIND,
+    DATE
 }

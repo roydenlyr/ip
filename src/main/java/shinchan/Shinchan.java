@@ -2,7 +2,7 @@ package shinchan;
 
 import shinchan.commands.Commands;
 import shinchan.commands.Parser;
-import shinchan.data.Datamanager;
+import shinchan.data.DataManager;
 import shinchan.exceptions.ShinChanException;
 import shinchan.tasks.TaskList;
 import shinchan.ui.Persona;
@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class Shinchan {
     public static void main(String[] args) {
         Persona persona = new Persona();
-        Datamanager datamanager = new Datamanager("./data/data.txt");
+        DataManager datamanager = new DataManager("./data/data.txt");
         TaskList taskList = new TaskList(datamanager.loadData());
         Scanner input = new Scanner(System.in);
 
@@ -53,6 +53,9 @@ public class Shinchan {
                         break;
                     case FIND:
                         taskList.findWord(line);
+                        break;
+                    case DATE:
+                        taskList.findDate(line);
                         break;
                     default:
                         Persona.printMessage("Invalid command");
