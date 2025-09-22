@@ -106,6 +106,14 @@ public class Persona {
         printMessage("Here are the match tasks in your list:" + list);
     }
 
+    public void dateNotFound() {
+        printMessage("Tasks with this date does not exist!");
+    }
+
+    public void dateFound(String list) {
+        printMessage("Here are the match tasks with the specified date in your list:" + list);
+    }
+
     public static void printMessage(String message) {
         System.out.println("\n====================");
         System.out.println(message);

@@ -9,14 +9,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.nio.charset.Charset;
 import java.io.FileWriter;
 
-public class Datamanager {
+public class DataManager {
     private File dataFile;
 
-    public Datamanager(String fileName) {
+    public DataManager(String fileName) {
         dataFile = new File(fileName);
         createFile();
     }
@@ -69,7 +72,7 @@ public class Datamanager {
         for (String line : dataItems) {
             String taskDescription = getTaskDescription(line);
             String taskType = getTaskType(line);
-            String[] date;
+            LocalDateTime[] date;
             switch (taskType) {
             case "T":
                 Todo todo = new Todo(taskDescription);
@@ -114,15 +117,18 @@ public class Datamanager {
         return line.substring(start, end).trim();
     }
 
-    private static String[] getTaskDate(String line) {
+    private static LocalDateTime[] getTaskDate(String line) {
         String type = getTaskType(line);
         String date = line.substring(line.indexOf('(') + 1, line.indexOf(')'));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy HHmm");
         if (type.equals("D")) {
-            return new String[]{ date.substring(date.indexOf(":") + 1).trim() };
+            return new LocalDateTime[]{ LocalDateTime.parse(date.substring(date.indexOf(":") + 1).trim(), formatter) };
         }
         String from = date.substring(date.indexOf("from:") + 5, date.indexOf("to:")).trim();
         String to = date.substring(date.indexOf("to:") + 3).trim();
-        return new String[]{ from, to };
+
+
+        return new LocalDateTime[]{ LocalDateTime.parse(from, formatter), LocalDateTime.parse(to, formatter) };
     }
 
     public static void writeToFile(ArrayList<Task> taskList) throws IOException {
