@@ -1,6 +1,6 @@
 package shinchan.commands;
 
-public enum Command {
+public enum Commands {
     BYE,
     LIST,
     MARK,

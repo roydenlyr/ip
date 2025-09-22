@@ -1,6 +1,7 @@
 package shinchan;
 
-import shinchan.commands.Command;
+import shinchan.commands.Commands;
+import shinchan.commands.Parser;
 import shinchan.data.Datamanager;
 import shinchan.exceptions.EmptyTaskListException;
 import shinchan.exceptions.MarkMissingItemNumberException;
@@ -27,7 +28,7 @@ public class Shinchan {
             while(true) {
                 try {
                     String line = input.nextLine();
-                    Command command = extractCommand(line);
+                    Commands command = Parser.parse(line);
                     switch (command) {
                     case LIST:
                         taskList.showList();
@@ -71,19 +72,6 @@ public class Shinchan {
         System.out.println("\n====================");
         System.out.println(message);
         System.out.println("====================\n");
-    }
-
-    public static Command extractCommand(String message) {
-        try {
-            if (message == null || message.isBlank()) {
-                return Command.EMPTY;
-            }
-
-            message = message.trim().toUpperCase().split("\\s", 2)[0];
-            return Command.valueOf(message);
-        } catch (IllegalArgumentException e) {
-            return Command.ERROR;
-        }
     }
 
 }
