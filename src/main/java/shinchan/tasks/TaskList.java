@@ -33,7 +33,7 @@ public class TaskList {
             throw new TaskNumberOutOfBoundException("Task number is out of bounds!");
         }
 
-        printMessage(persona.removeTask(taskList.get(taskIndex), taskList.size() - 1));
+        persona.removeTask(taskList.get(taskIndex), taskList.size() - 1);
         taskList.remove(taskIndex);
         Datamanager.writeToFile(taskList);
     }
@@ -53,7 +53,7 @@ public class TaskList {
 
         Task event = new Event(description, from, to);
         taskList.add(event);
-        printMessage(persona.addTask(taskList));
+        persona.addTask(taskList);
         Datamanager.appendToFile(event);
     }
 
@@ -71,7 +71,7 @@ public class TaskList {
 
         Task deadlineTask = new Deadline(description, deadline);
         taskList.add(deadlineTask);
-        printMessage(persona.addTask(taskList));
+        persona.addTask(taskList);
         Datamanager.appendToFile(deadlineTask);
     }
 
@@ -85,14 +85,14 @@ public class TaskList {
 
         Task todo = new Todo(description);
         taskList.add(todo);
-        printMessage(persona.addTask(taskList));
+        persona.addTask(taskList);
         Datamanager.appendToFile(todo);
     }
 
     public void updateTaskStatus(String input, boolean isDone)
             throws TaskNumberOutOfBoundException, MarkMissingItemNumberException, IOException {
         if (taskList.isEmpty()) {
-            printMessage(persona.listEmpty());
+            Persona.printMessage(persona.listEmpty());
             return;
         }
         int taskIndex = extractTrailingNumber(input) - 1;
@@ -103,7 +103,7 @@ public class TaskList {
             throw new TaskNumberOutOfBoundException("Task number is out of bounds!");
         }
         taskList.get(taskIndex).setDone(isDone);
-        printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + taskList.get(taskIndex));
+        Persona.printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + taskList.get(taskIndex));
         Datamanager.writeToFile(taskList);
     }
 
@@ -118,7 +118,7 @@ public class TaskList {
         } else {
             msg.append(persona.listEmpty());
         }
-        printMessage(msg.toString());
+        Persona.printMessage(msg.toString());
     }
 
     private String formateDate(String date) {
@@ -145,11 +145,4 @@ public class TaskList {
             return -1;
         }
     }
-
-    public static void printMessage (String message) {
-        System.out.println("\n====================");
-        System.out.println(message);
-        System.out.println("====================\n");
-    }
-
 }

@@ -52,13 +52,18 @@ public class Persona {
                             @       @*                                                        @""");
     }
 
-    public String introduction() {
-        return("Yo~ I'm ShinChan!\n" +
+    public void introduction() {
+        printMessage("Yo~ I'm ShinChan!\n" +
                 "What boring adult stuff do you want me to do this time?");
     }
 
-    public String bye() {
-        return "Bye bye! Don't miss me too much, okay?";
+    public void showIntroduction() {
+        portrait();
+        introduction();
+    }
+
+    public void bye() {
+        printMessage("Bye bye! Don't miss me too much, okay?");
     }
 
     public String listIntro() {
@@ -68,7 +73,7 @@ public class Persona {
     }
 
     public String listEmpty() {
-        return "Your list is emptier than my bank account... pathetic";
+        return ("Your list is emptier than my bank account... pathetic");
     }
 
     public String markIntro() {
@@ -84,18 +89,18 @@ public class Persona {
                 """);
     }
 
-    public String addTask() {
-        return ("""
-                To add or to ignore? Hmmm... Fine, I'll add it this time. TSK!
-                """);
+    public void addTask(ArrayList<Task> taskList) {
+        printMessage("Got it. I've added this tasks:\n" + taskList.get(taskList.size() - 1) +
+                "\nNow you have " +  taskList.size() + " tasks in the list.");
     }
 
-    public String addTask(ArrayList<Task> taskList) {
-        return "Got it. I've added this tasks:\n" + taskList.get(taskList.size() - 1) +
-                "\nNow you have " +  taskList.size() + " tasks in the list.";
+    public void removeTask(Task task, int size) {
+        printMessage("Noted. I've removed this task:\n" + task + "\nNow you have " + size + " tasks in the list.");
     }
 
-    public String removeTask(Task task, int size) {
-        return "Noted. I've removed this task:\n" + task + "\nNow you have " + size + " tasks in the list.";
+    public static void printMessage(String message) {
+        System.out.println("\n====================");
+        System.out.println(message);
+        System.out.println("====================\n");
     }
 }
