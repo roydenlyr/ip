@@ -98,6 +98,14 @@ public class Persona {
         printMessage("Noted. I've removed this task:\n" + task + "\nNow you have " + size + " tasks in the list.");
     }
 
+    public void wordNotFound() {
+        printMessage("Tasks with this keyword does not exist!");
+    }
+
+    public void wordFound(String list) {
+        printMessage("Here are the match tasks in your list:" + list);
+    }
+
     public static void printMessage(String message) {
         System.out.println("\n====================");
         System.out.println(message);
