@@ -7,16 +7,11 @@ import shinchan.exceptions.MarkMissingItemNumberException;
 import shinchan.exceptions.TaskMissingDateException;
 import shinchan.exceptions.TaskMissingDescriptionException;
 import shinchan.exceptions.TaskNumberOutOfBoundException;
-import shinchan.tasks.Deadline;
-import shinchan.tasks.Event;
-import shinchan.tasks.Task;
-import shinchan.tasks.Todo;
+import shinchan.tasks.TaskList;
 import shinchan.ui.Persona;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.ArrayList;
 
 public class Shinchan {
     public static void main(String[] args) {
@@ -24,9 +19,8 @@ public class Shinchan {
         persona.portrait();
         printMessage(persona.introduction());
 
-
         Datamanager datamanager = new Datamanager("./data/data.txt");
-        ArrayList<Task> taskList = datamanager.loadData();
+        TaskList taskList = new TaskList(datamanager.loadData());
 
         Scanner input = new Scanner(System.in);
 
@@ -36,22 +30,22 @@ public class Shinchan {
                     Command command = extractCommand(line);
                     switch (command) {
                     case LIST:
-                        showList(persona, taskList);
+                        taskList.showList();
                         break;
                     case MARK:
-                        updateTaskStatus(taskList, line, true, persona);
+                        taskList.updateTaskStatus(line, true);
                         break;
                     case UNMARK:
-                        updateTaskStatus(taskList, line, false, persona);
+                        taskList.updateTaskStatus(line, false);
                         break;
                     case TODO:
-                        addTodo(line, taskList, persona);
+                        taskList.addTodo(line);
                         break;
                     case DEADLINE:
-                        addDeadline(line, taskList, persona);
+                        taskList.addDeadline(line);
                         break;
                     case EVENT:
-                        addEvent(line, taskList, persona);
+                        taskList.addEvent(line);
                         break;
                     case EMPTY:
                         printMessage("Please enter something");
@@ -60,7 +54,7 @@ public class Shinchan {
                         printMessage(persona.bye());
                         return;
                     case DELETE:
-                        deleteTask(taskList, line, persona);
+                        taskList.deleteTask(line);
                         break;
                     default:
                         printMessage("Invalid command");
@@ -71,120 +65,6 @@ public class Shinchan {
                     printMessage(e.getMessage());
                 }
             }
-    }
-
-    private static void deleteTask(ArrayList<Task> taskList, String line, Persona persona)
-            throws EmptyTaskListException, TaskNumberOutOfBoundException, MarkMissingItemNumberException, IOException {
-        if (taskList.isEmpty()) {
-            throw new EmptyTaskListException(persona.listEmpty());
-        }
-        int taskIndex = extractTrailingNumber(line) - 1;
-        if (taskIndex < 0) {
-            throw new MarkMissingItemNumberException("Please include a valid item number!");
-        }
-        if (taskIndex >= taskList.size()) {
-            throw new TaskNumberOutOfBoundException("Task number is out of bounds!");
-        }
-
-        printMessage(persona.removeTask(taskList.get(taskIndex), taskList.size() - 1));
-        taskList.remove(taskIndex);
-        Datamanager.writeToFile(taskList);
-    }
-
-    private static void addEvent(String line, ArrayList<Task> taskList, Persona persona)
-            throws TaskMissingDateException, TaskMissingDescriptionException, IOException {
-        String[] contents = extractContents(line);
-        if (contents == null) {
-            throw new TaskMissingDescriptionException("The description of Event task cannot be empty!");
-        }
-        if (contents.length != 3) {
-            throw new TaskMissingDateException("Please enter a valid TO and FROM date!");
-        }
-        String description = contents[0].trim();
-        String from = formatDate(contents[1]);
-        String to = formatDate(contents[2]);
-
-        Task event = new Event(description, from, to);
-        taskList.add(event);
-        printMessage(persona.addTask(taskList));
-        Datamanager.appendToFile(event);
-    }
-
-    private static void addDeadline(String line, ArrayList<Task> taskList, Persona persona)
-            throws TaskMissingDateException, TaskMissingDescriptionException, IOException {
-        String[] contents = extractContents(line);
-        if (contents == null) {
-            throw new TaskMissingDescriptionException("The description of Deadline task cannot be empty!");
-        }
-        if (contents.length != 2) {
-            throw new TaskMissingDateException("Please enter a valid deadline date!");
-        }
-        String description = contents[0].trim();
-        String deadline = formatDate(contents[1]);
-
-        Task deadlineTask = new Deadline(description, deadline);
-        taskList.add(deadlineTask);
-        printMessage(persona.addTask(taskList));
-        Datamanager.appendToFile(deadlineTask);
-    }
-
-    private static void addTodo(String line, ArrayList<Task> taskList, Persona persona)
-            throws TaskMissingDescriptionException, IOException {
-        String[] contents = extractContents(line);
-        if (contents == null) {
-            throw new TaskMissingDescriptionException("The description of Todo task cannot be empty!");
-        }
-        String description = contents[0].trim();
-
-        Task todo = new Todo(description);
-        taskList.add(todo);
-        printMessage(persona.addTask(taskList));
-        Datamanager.appendToFile(todo);
-    }
-
-    private static String[] extractContents(String line) {
-        String[] contents = line.split("\\s", 2);
-        if (contents.length != 2) {
-            return null;
-        }
-        String content = contents[1].trim();
-        return content.split("/");
-    }
-
-    private static String formatDate(String date) {
-        return date.split("\\s", 2)[1].trim();
-    }
-
-    private static void showList(Persona persona, ArrayList<Task> taskList) {
-        int numOfTasks = taskList.size();
-        StringBuilder msg = new StringBuilder();
-        if (numOfTasks > 0) {
-            msg.append(persona.listIntro());
-            for (int i = 0; i < numOfTasks; i++) {
-                msg.append("\n").append(i + 1).append(". ").append(taskList.get(i));
-            }
-        } else {
-            msg.append(persona.listEmpty());
-        }
-        printMessage(msg.toString());
-    }
-
-    public static void updateTaskStatus(ArrayList<Task> taskList, String line, boolean isDone, Persona persona)
-            throws TaskNumberOutOfBoundException, MarkMissingItemNumberException, IOException {
-        if (taskList.isEmpty()) {
-            printMessage(persona.listEmpty());
-            return;
-        }
-        int taskIndex = extractTrailingNumber(line) - 1;
-        if (taskIndex < 0) {
-            throw new MarkMissingItemNumberException("Please include a valid item number!");
-        }
-        if (taskIndex >= taskList.size()) {
-            throw new TaskNumberOutOfBoundException("Task number is out of bounds!");
-        }
-        taskList.get(taskIndex).setDone(isDone);
-        printMessage((isDone ? persona.markIntro() : persona.unmarkIntro()) + taskList.get(taskIndex));
-        Datamanager.writeToFile(taskList);
     }
 
     public static void printMessage (String message) {
@@ -206,15 +86,4 @@ public class Shinchan {
         }
     }
 
-    public static int extractTrailingNumber(String message) {
-        try {
-            int lastIndex = message.length() - 1;
-            while (lastIndex >= 0 && Character.isDigit(message.charAt(lastIndex))) {
-                lastIndex--;
-            }
-            return Integer.parseInt(message.substring(lastIndex + 1));
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
 }
