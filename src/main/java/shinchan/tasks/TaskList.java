@@ -3,6 +3,7 @@ package shinchan.tasks;
 import shinchan.data.Datamanager;
 import shinchan.exceptions.EmptyTaskListException;
 import shinchan.exceptions.MarkMissingItemNumberException;
+import shinchan.exceptions.MissingWordException;
 import shinchan.exceptions.TaskMissingDateException;
 import shinchan.exceptions.TaskMissingDescriptionException;
 import shinchan.exceptions.TaskNumberOutOfBoundException;
@@ -18,6 +19,27 @@ public class TaskList {
     public TaskList(ArrayList<Task> taskList) {
         this.taskList = taskList;
         persona = new Persona();
+    }
+
+    public void findWord (String input) throws MissingWordException {
+        String[] contents = extractContents(input);
+        if (contents == null) {
+            throw new MissingWordException("Please include the word to search");
+        }
+        String word = contents[0].trim();
+        StringBuilder msg = new StringBuilder();
+        int index = 1;
+        for (Task task : taskList) {
+            if (task.getDescription().contains(word)){
+                msg.append("\n").append(index).append(". ").append(task);
+                index++;
+            }
+        }
+        if (msg.isEmpty()) {
+            persona.wordNotFound();
+            return;
+        }
+        persona.wordFound(msg.toString());
     }
 
     public void deleteTask(String input)

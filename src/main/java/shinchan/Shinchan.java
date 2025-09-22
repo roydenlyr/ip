@@ -51,6 +51,9 @@ public class Shinchan {
                     case DELETE:
                         taskList.deleteTask(line);
                         break;
+                    case FIND:
+                        taskList.findWord(line);
+                        break;
                     default:
                         Persona.printMessage("Invalid command");
                         break;
