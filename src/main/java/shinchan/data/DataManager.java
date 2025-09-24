@@ -5,140 +5,147 @@ import shinchan.tasks.Event;
 import shinchan.tasks.Task;
 import shinchan.tasks.Todo;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.nio.charset.Charset;
-import java.io.FileWriter;
 import java.util.List;
 
 public class DataManager {
-    private File dataFile;
+    public static final Path DEFAULT_PATH = Path.of("data", "data.txt");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+
+    private final Path dataPath;
 
     public DataManager(String fileName) {
-        dataFile = new File(fileName);
-        createFile();
+        this(Path.of(fileName));
     }
 
-    public File getDataFile() {
-        return dataFile;
+    public DataManager(Path dataPath) {
+        this.dataPath = dataPath;
     }
 
-    public void createFile() {
-        try {
-            if (dataFile.exists()) {
-                System.out.println("File " + dataFile.getName() + " already exists.");
-                return;
+    public List<Task> load() throws IOException {
+        ensureFileExists();
+        List<String> lines = Files.readAllLines(dataPath, StandardCharsets.UTF_8);
+        List<Task> tasks = new ArrayList<>(lines.size());
+        for (String line : lines) {
+            if (line == null || line.isEmpty()) {
+                continue;
             }
-            if (!dataFile.getParentFile().exists()) {
-                dataFile.getParentFile().mkdirs();
-            }
-            dataFile.createNewFile();
-        } catch (IOException e) {
-            System.out.println("Cannot create file: " + e.getMessage());
-        }
-    }
-
-    private ArrayList<String> readFile() throws IOException {
-        if (!dataFile.exists()) {
-            throw new FileNotFoundException();
-        }
-        if (dataFile.length() == 0) {
-            System.out.println("empty file");
-            return new ArrayList<>();
-        }
-        return (ArrayList<String>) Files.readAllLines(dataFile.toPath(), Charset.defaultCharset());
-    }
-
-    public ArrayList<Task> loadData() {
-        ArrayList<Task> taskList = new ArrayList<>();
-        try {
-            ArrayList<String> dataItems = readFile();
-            taskList = parse(dataItems);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return taskList;
-    }
-
-    private ArrayList<Task> parse(ArrayList<String> dataItems) {
-        ArrayList<Task> allTasks = new ArrayList<>();
-        for (String line : dataItems) {
-            String taskDescription = getTaskDescription(line);
-            String taskType = getTaskType(line);
-            LocalDateTime[] date;
-            switch (taskType) {
-            case "T":
-                Todo todo = new Todo(taskDescription);
-                todo.setDone(isTaskDone(line));
-                allTasks.add(todo);
-                break;
-            case "D":
-                date = getTaskDate(line);
-                Deadline deadline = new Deadline(taskDescription, date[0]);
-                deadline.setDone(isTaskDone(line));
-                allTasks.add(deadline);
-                break;
-            case "E":
-                date = getTaskDate(line);
-                Event event = new Event(taskDescription, date[0], date[1]);
-                event.setDone(isTaskDone(line));
-                allTasks.add(event);
-                break;
-            default:
-                System.out.println("Unknown task encountered. Skipping");
-                break;
+            Task task = parseRecord(line);
+            if (task != null) {
+                tasks.add(task);
             }
         }
-        return allTasks;
+        return tasks;
     }
 
-    private static String getTaskType(String line) {
-        return Character.toString(line.charAt(1));
-    }
-
-    private static boolean isTaskDone(String line) {
-        return line.charAt(4) == 'X';
-    }
-
-    private static String getTaskDescription(String line) {
-        int start = 7;
-        int end = line.indexOf("(");
-
-        if (end == -1) {
-            return line.substring(start).trim();
+    public void saveAll(List<Task> tasks) throws IOException {
+        ensureParentDir();
+        Path tmp = dataPath.resolveSibling(dataPath.getFileName() + ".tmp");
+        try (BufferedWriter writer = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8)) {
+            for (Task task : tasks) {
+                writer.write(formatRecord(task));
+                writer.newLine();
+            }
         }
-        return line.substring(start, end).trim();
+        Files.move(tmp, dataPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
     }
 
-    private static LocalDateTime[] getTaskDate(String line) {
-        String type = getTaskType(line);
-        String date = line.substring(line.indexOf('(') + 1, line.indexOf(')'));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy HHmm");
-        if (type.equals("D")) {
-            return new LocalDateTime[]{ LocalDateTime.parse(date.substring(date.indexOf(":") + 1).trim(), formatter) };
+    public void append(Task task) throws IOException {
+        ensureFileExists();
+        try (BufferedWriter writer = Files.newBufferedWriter(dataPath, StandardCharsets.UTF_8, StandardOpenOption.APPEND)) {
+            writer.write(formatRecord(task));
+            writer.newLine();
         }
-        String from = date.substring(date.indexOf("from:") + 5, date.indexOf("to:")).trim();
-        String to = date.substring(date.indexOf("to:") + 3).trim();
-
-        return new LocalDateTime[]{ LocalDateTime.parse(from, formatter), LocalDateTime.parse(to, formatter) };
     }
 
-    public static void writeToFile(List<Task> taskList) throws IOException {
-        FileWriter fw = new FileWriter("./data/data.txt");
-        for (Task task : taskList) {
-            fw.write(task.toString() + "\n");
-        }
-        fw.close();
+    public static void writeToFile(List<Task> tasks) throws IOException {
+        new DataManager(DEFAULT_PATH).saveAll(tasks);
     }
 
     public static void appendToFile(Task task) throws IOException {
-        FileWriter fw = new FileWriter("./data/data.txt", true);
-        fw.write(task.toString() + "\n");
-        fw.close();
+        new DataManager(DEFAULT_PATH).append(task);
+    }
+
+    private void ensureFileExists() throws IOException {
+        ensureParentDir();
+        if (!Files.exists(dataPath)) {
+            Files.createFile(dataPath);
+        }
+    }
+
+    private void ensureParentDir() throws IOException {
+        Path parent = dataPath.getParent();
+        if (parent != null && !Files.exists(parent)) {
+            Files.createDirectories(parent);
+        }
+    }
+
+    private static String formatRecord(Task task) {
+        String done = task.isDone() ? "1" : "0";
+        String description = sanitize(task.getDescription());
+        if (task instanceof Event event) {
+            return String.join("|", "T", done, description,
+                    FORMATTER.format(event.getFrom()), FORMATTER.format(event.getBy()));
+        }
+        if (task instanceof Deadline deadline) {
+            return String.join("|", "D", done, description, FORMATTER.format(deadline.getBy()));
+        }
+        if (task instanceof Todo) {
+            return String.join("|", "T", done, description);
+        }
+        throw new IllegalArgumentException("Unknown Task type: " + task.getClass().getName());
+    }
+
+    private static Task parseRecord(String line) {
+        String[] parts = line.split("\\|", -1);
+        if (parts.length < 3) {
+            return null;
+        }
+        String type = parts[0].trim();
+        boolean isDone = "1".equals(parts[1].trim());
+        String description = unsanitize(parts[2]);
+
+        switch (type) {
+        case "T":
+            Todo todo = new Todo(description);
+            todo.setDone(isDone);
+            return todo;
+        case "D":
+            if (parts.length < 4) {
+                return null;
+            }
+            LocalDateTime by = LocalDateTime.parse(parts[3].trim(), FORMATTER);
+            Deadline deadline = new Deadline(description, by);
+            deadline.setDone(isDone);
+            return deadline;
+        case "E":
+            if (parts.length < 5) {
+                return null;
+            }
+            LocalDateTime from = LocalDateTime.parse(parts[3].trim(), FORMATTER);
+            LocalDateTime to = LocalDateTime.parse(parts[4].trim(), FORMATTER);
+            Event event = new Event(description, from, to);
+            event.setDone(isDone);
+            return event;
+        default:
+            return null;
+        }
+    }
+
+    private static String sanitize(String line) {
+        return line == null ? "" : line.replace("|", "/");
+    }
+
+    private static String unsanitize(String line) {
+        return line;
     }
 }

@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Shinchan {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Persona persona = new Persona();
         DataManager dataManager = new DataManager("./data/data.txt");
-        TaskList taskList = new TaskList(dataManager.loadData());
+        TaskList taskList = new TaskList(dataManager.load());
         Scanner input = new Scanner(System.in);
 
         persona.showIntroduction();

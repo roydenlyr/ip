@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class TaskList {
-    private final ArrayList<Task> taskList;
+    private final List<Task> taskList;
 
-    public TaskList(ArrayList<Task> taskList) {
+    public TaskList(List<Task> taskList) {
         this.taskList = taskList;
     }
 
