@@ -11,8 +11,8 @@ public class Deadline extends Todo{
         this.by = by;
     }
 
-    public Deadline(String description) {
-        super(description);
+    public boolean occursOn(LocalDateTime date) {
+        return by.isEqual(date);
     }
 
     public LocalDateTime getBy() {

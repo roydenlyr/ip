@@ -1,1 +1,3 @@
 [T][ ] buy bread
+[D][ ] eat bread (by: Sep 23 2025 2359)
+[E][ ] poop bread (from: Sep 24 2025 0000 to: Sep 24 2025 2359)

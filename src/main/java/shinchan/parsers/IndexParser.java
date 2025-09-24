@@ -1,4 +1,4 @@
-package shinchan.commands;
+package shinchan.parsers;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

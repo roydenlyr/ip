@@ -3,6 +3,7 @@ package shinchan.ui;
 import shinchan.tasks.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Persona {
     public void portrait() {
@@ -89,7 +90,7 @@ public class Persona {
                 """);
     }
 
-    public void addTask(ArrayList<Task> taskList) {
+    public void addTask(List<Task> taskList) {
         printMessage("Got it. I've added this tasks:\n" + taskList.get(taskList.size() - 1) +
                 "\nNow you have " +  taskList.size() + " tasks in the list.");
     }
