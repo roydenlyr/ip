@@ -15,6 +15,10 @@ public class Event extends Deadline{
         return from;
     }
 
+    public boolean occursOn(LocalDateTime date) {
+        return !date.isBefore(from) && !date.isAfter(by);
+    }
+
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd yyyy HHmm");
         return "[E]" + getStatusIcon() + " " + getDescription() +
