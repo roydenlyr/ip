@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class TaskList {
-    private final ArrayList<Task> taskList;
+    private ArrayList<Task> taskList;
     private Persona persona;
 
     public TaskList(ArrayList<Task> taskList) {
@@ -52,8 +52,8 @@ public class TaskList {
         return (ArrayList<Task>) taskList.stream().filter(predicate).toList();
     }
 
-    public ArrayList<Task> asUnmodifiableList() {
-        return (ArrayList<Task>) List.copyOf(taskList);
+    public List<Task> asUnmodifiableList() {
+        return List.copyOf(taskList);
     }
 
     public void findDate (String input) throws MissingDateException, IllegalDateFormatException {

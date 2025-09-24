@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.nio.charset.Charset;
 import java.io.FileWriter;
+import java.util.List;
 
 public class DataManager {
     private File dataFile;
@@ -124,11 +125,10 @@ public class DataManager {
         String from = date.substring(date.indexOf("from:") + 5, date.indexOf("to:")).trim();
         String to = date.substring(date.indexOf("to:") + 3).trim();
 
-
         return new LocalDateTime[]{ LocalDateTime.parse(from, formatter), LocalDateTime.parse(to, formatter) };
     }
 
-    public static void writeToFile(ArrayList<Task> taskList) throws IOException {
+    public static void writeToFile(List<Task> taskList) throws IOException {
         FileWriter fw = new FileWriter("./data/data.txt");
         for (Task task : taskList) {
             fw.write(task.toString() + "\n");

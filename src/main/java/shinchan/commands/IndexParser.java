@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class IndexParser {
-    private static final Pattern TRAILING_INT = Pattern.compile("(\\\\d+)\\\\s*$");
+    private static final Pattern TRAILING_INT = Pattern.compile("(\\d+)\\s*$");
 
     private IndexParser() {}
 
