@@ -13,8 +13,8 @@ import java.util.Scanner;
 public class Shinchan {
     public static void main(String[] args) {
         Persona persona = new Persona();
-        DataManager datamanager = new DataManager("./data/data.txt");
-        TaskList taskList = new TaskList(datamanager.loadData());
+        DataManager dataManager = new DataManager("./data/data.txt");
+        TaskList taskList = new TaskList(dataManager.loadData());
         Scanner input = new Scanner(System.in);
 
         persona.showIntroduction();

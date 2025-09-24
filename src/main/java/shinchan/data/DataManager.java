@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class DataManager {
         }
     }
 
-    private ArrayList readFile() throws IOException {
+    private ArrayList<String> readFile() throws IOException {
         if (!dataFile.exists()) {
             throw new FileNotFoundException();
         }
@@ -51,9 +50,7 @@ public class DataManager {
             System.out.println("empty file");
             return new ArrayList<>();
         }
-        ArrayList<String> dataItems = (ArrayList) Files.readAllLines(dataFile.toPath(), Charset.defaultCharset());
-
-        return dataItems;
+        return (ArrayList<String>) Files.readAllLines(dataFile.toPath(), Charset.defaultCharset());
     }
 
     public ArrayList<Task> loadData() {

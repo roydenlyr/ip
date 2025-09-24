@@ -12,19 +12,48 @@ import shinchan.exceptions.TaskNumberOutOfBoundException;
 import shinchan.ui.Persona;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class TaskList {
-    private ArrayList<Task> taskList;
+    private final ArrayList<Task> taskList;
     private Persona persona;
 
     public TaskList(ArrayList<Task> taskList) {
         this.taskList = taskList;
         persona = new Persona();
+    }
+
+    public int size() {
+        return taskList.size();
+    }
+
+    public Task get(int index) {
+        return taskList.get(index);
+    }
+
+    public void add(Task task) {
+        taskList.add(task);
+    }
+
+    public void removeAt(int index) {
+        taskList.remove(index);
+    }
+
+    public void setDone(int index, boolean isDone) {
+        taskList.get(index).setDone(isDone);
+    }
+
+    public ArrayList<Task> find(Predicate<Task> predicate) {
+        return (ArrayList<Task>) taskList.stream().filter(predicate).toList();
+    }
+
+    public ArrayList<Task> asUnmodifiableList() {
+        return (ArrayList<Task>) List.copyOf(taskList);
     }
 
     public void findDate (String input) throws MissingDateException, IllegalDateFormatException {
