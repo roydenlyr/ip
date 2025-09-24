@@ -1,2 +1,4 @@
-T|0|buy bread
-D|0|eat bread|2025-09-25 2359
+D|0|Report Submit|2025-10-05 2359
+T|0|Team sync
+D|0|Report submit|2025-10-05 2359
+T|0|Team sync|2025-10-06 0900|2025-10-06 1000

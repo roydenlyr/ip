@@ -2,7 +2,7 @@ package shinchan.commands;
 
 import shinchan.data.DataManager;
 import shinchan.exceptions.EmptyTaskListException;
-import shinchan.exceptions.MarkMissingItemNumberException;
+import shinchan.exceptions.MissingItemNumberException;
 import shinchan.exceptions.ShinChanException;
 import shinchan.exceptions.TaskNumberOutOfBoundException;
 import shinchan.tasks.TaskList;
@@ -22,7 +22,7 @@ public class DeleteCommand implements Command{
             throw new EmptyTaskListException(persona.listEmpty());
         }
         if (index < 0) {
-            throw new MarkMissingItemNumberException("Please include a valid item number!");
+            throw new MissingItemNumberException("Please include a valid item number!");
         }
         if (index >= taskList.size()) {
             throw new TaskNumberOutOfBoundException("Task number out of bounds!");

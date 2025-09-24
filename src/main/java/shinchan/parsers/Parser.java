@@ -15,7 +15,10 @@ import shinchan.commands.ListCommand;
 import shinchan.commands.MarkCommand;
 import shinchan.commands.UnmarkCommand;
 import shinchan.exceptions.IllegalDateFormatException;
+import shinchan.exceptions.InvalidItemNumberException;
+import shinchan.exceptions.MissingItemNumberException;
 import shinchan.exceptions.TaskMissingDateException;
+import shinchan.exceptions.TaskNumberOutOfBoundException;
 
 import java.util.Map;
 
@@ -26,7 +29,9 @@ public class Parser {
     private static final String EVENT_FROM = "from";
     private static final String EVENT_TO = "to";
 
-    public static Command parse (String input) throws IllegalDateFormatException, TaskMissingDateException {
+    public static Command parse (String input)
+            throws IllegalDateFormatException, TaskMissingDateException,
+            MissingItemNumberException, TaskNumberOutOfBoundException, InvalidItemNumberException {
         Commands command;
         if (input == null || input.isBlank()) {
             return new EmptyCommand();

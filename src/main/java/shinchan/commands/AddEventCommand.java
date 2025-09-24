@@ -1,6 +1,7 @@
 package shinchan.commands;
 
 import shinchan.data.DataManager;
+import shinchan.exceptions.InvalidDateException;
 import shinchan.exceptions.TaskMissingDescriptionException;
 import shinchan.tasks.Event;
 import shinchan.tasks.Task;
@@ -21,9 +22,13 @@ public class AddEventCommand implements Command {
         this.to = to;
     }
 
-    public void execute(TaskList taskList, Persona persona) throws TaskMissingDescriptionException, IOException {
+    public void execute(TaskList taskList, Persona persona)
+            throws TaskMissingDescriptionException, IOException, InvalidDateException {
         if (description.isBlank()) {
             throw new TaskMissingDescriptionException("The description of Deadline task cannot be empty!");
+        }
+        if (from.isAfter(to)) {
+            throw new InvalidDateException("Date of 'from' cannot be later than 'to'!");
         }
         Task event = new Event(description, from, to);
         taskList.add(event);

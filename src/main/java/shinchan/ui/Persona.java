@@ -55,7 +55,7 @@ public class Persona {
 
     public void introduction() {
         printMessage("Yo~ I'm ShinChan!\n" +
-                "What boring adult stuff do you want me to do this time?");
+                "What can I do for you?");
     }
 
     public void showIntroduction() {
@@ -64,29 +64,27 @@ public class Persona {
     }
 
     public void bye() {
-        printMessage("Bye bye! Don't miss me too much, okay?");
+        printMessage("Bye. Hope to see you again soon!");
     }
 
     public String listIntro() {
         return ("""
-                Can you say bye now???
-                Anyways, here are the tasks in your list:""");
+                Here are the tasks in your list:""");
     }
 
     public String listEmpty() {
-        return ("Your list is emptier than my bank account... pathetic");
+        return ("Your list is currently empty!");
     }
 
     public String markIntro() {
         return ("""
-                Didn't expect you to complete anything to be honest
-                Here ya go, I've marked it for you this time:
+                Nice! I've marked this task as done:
                 """);
     }
 
     public String unmarkIntro() {
         return ("""
-                AHAHAHAHA!! Someone's task is piling up :
+                OK, I've marked this task as not done yet:
                 """);
     }
 
@@ -104,7 +102,7 @@ public class Persona {
     }
 
     public void wordFound(String list) {
-        printMessage("Here are the match tasks in your list:" + list);
+        printMessage("Here are the matched tasks in your list:" + list);
     }
 
     public void dateNotFound() {
@@ -112,12 +110,12 @@ public class Persona {
     }
 
     public void dateFound(String list) {
-        printMessage("Here are the match tasks with the specified date in your list:" + list);
+        printMessage("Here are the matched tasks with the specified date in your list:" + list);
     }
 
     public static void printMessage(String message) {
-        System.out.println("\n====================");
+        System.out.println("\n============================================================");
         System.out.println(message);
-        System.out.println("====================\n");
+        System.out.println("============================================================\n");
     }
 }
